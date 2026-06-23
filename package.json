@@ -1,5 +1,5 @@
 {
-  "name": "node-nsz",
+  "name": "@clearmist/node-nsz",
   "version": "0.1.0",
   "description": "Node API wrapper for NSZ",
   "repository": {

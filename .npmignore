@@ -1,0 +1,11 @@
+.github/
+example.js
+index.test.js
+*.nsp
+*.nsz
+*.xci
+*.xcz
+*.nca
+*.ncz
+*.txt
+*.keys

@@ -1,0 +1,42 @@
+{
+  "name": "node-nsz",
+  "version": "0.1.0",
+  "description": "Node API wrapper for NSZ",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Clearmist/node-nsz.git"
+  },
+  "homepage": "https://github.com/Clearmist/node-nsz",
+  "bugs": "https://github.com/Clearmist/node-nsz/issues",
+  "author": "Clearmist",
+  "keywords": [
+    "switch",
+    "nsp",
+    "xci",
+    "nsz",
+    "xcz",
+    "file compression"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "scripts": {
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  }
+}

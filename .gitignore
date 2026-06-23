@@ -1,0 +1,9 @@
+node_modules/
+*.nsp
+*.nsz
+*.xci
+*.xcz
+*.nca
+*.ncz
+*.txt
+*.keys

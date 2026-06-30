@@ -13,6 +13,7 @@ export function binaryPath() {
 
   if (!fs.existsSync(candidate)) {
     const available = fs.existsSync(PREBUILDS_DIR) ? fs.readdirSync(PREBUILDS_DIR) : [];
+
     throw new Error(
       `No nsz prebuild found for platform "${platformArch}". ` +
       `Available prebuilds: ${available.join(', ') || 'none'}`
@@ -23,7 +24,10 @@ export function binaryPath() {
 }
 
 function toArray(value) {
-  if (value === undefined || value === null) return [];
+  if (value === undefined || value === null) {
+    return [];
+  }
+
   return Array.isArray(value) ? value : [value];
 }
 
@@ -31,10 +35,11 @@ function withMachineReadable(args) {
   return args.includes('--machine-readable') ? args : [...args, '--machine-readable'];
 }
 
-// The binary emits one JSON object per line (NDJSON), not a single JSON
-// document for the whole run. Any non-JSON line is treated as invalid output.
+// The binary emits one JSON object per line (NDJSON).
+// Any non-JSON line is treated as invalid output.
 function parseMachineReadableOutput(stdout) {
   const lines = stdout.split('\n').filter((line) => line.trim().length > 0);
+
   return lines.map((line) => {
     try {
       return JSON.parse(line);
@@ -82,21 +87,31 @@ export function spawnNsz(args, spawnOptions = {}) {
 export function runNsz(args, options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawnNsz(args, options.spawnOptions);
+
     let stdout = '';
     let stderr = '';
     let pendingLine = '';
 
     child.stdout.on('data', (chunk) => {
       stdout += chunk;
-      if (options.onStdout) options.onStdout(chunk);
+
+      if (options.onStdout) {
+        options.onStdout(chunk);
+      }
 
       if (options.onLine) {
         pendingLine += chunk;
+
         const lines = pendingLine.split('\n');
+
         pendingLine = lines.pop();
-        for (const line of lines) options.onLine(line);
+
+        for (const line of lines) {
+          options.onLine(line);
+        }
       }
     });
+
     child.stderr.on('data', (chunk) => {
       stderr += chunk;
       if (options.onStderr) options.onStderr(chunk);
@@ -104,8 +119,12 @@ export function runNsz(args, options = {}) {
 
     child.on('error', reject);
     child.on('close', (code) => {
-      if (options.onLine && pendingLine.length > 0) options.onLine(pendingLine);
+      if (options.onLine && pendingLine.length > 0) {
+        options.onLine(pendingLine);
+      }
+
       let json;
+
       try {
         json = parseMachineReadableOutput(stdout);
       } catch (err) {
@@ -115,6 +134,7 @@ export function runNsz(args, options = {}) {
       }
 
       const result = { code, stdout, stderr, json };
+
       if (code !== 0 && !options.allowFailure) {
         reject(Object.assign(new Error(`nsz exited with code ${code}`), result));
       } else {
@@ -134,13 +154,19 @@ export function decompress(files, options = {}) {
 
 export function verify(files, options = {}) {
   const mode = options.quick ? '-Q' : '-V';
+
   return runNsz([mode, ...buildCommonArgs(options), ...toArray(files)], options);
 }
 
 export function extract(files, options = {}) {
   const args = ['-x'];
-  if (options.extractRegex !== undefined) args.push('--extractregex', options.extractRegex);
+
+  if (options.extractRegex !== undefined) {
+    args.push('--extractregex', options.extractRegex);
+  }
+
   args.push(...buildCommonArgs(options), ...toArray(files));
+
   return runNsz(args, options);
 }
 
@@ -168,5 +194,6 @@ export function undupe(files, options = {}) {
   if (options.blacklist !== undefined) args.push('--undupe-blacklist', options.blacklist);
 
   args.push(...buildCommonArgs(options), ...toArray(files));
+
   return runNsz(args, options);
 }
